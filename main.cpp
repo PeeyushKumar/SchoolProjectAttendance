@@ -1,20 +1,23 @@
 #include<iostream>
 #include<fstream>
-#include<stdlib.h>
-#include<string.h>
+#include<string>
 
 using namespace std;
 
-struct session
-{
-    char date[11];
-    char presence;
-};
 
 struct Subject
 {
-    char name[50];
+    string name;
+	string subcode;
 }sublist[7];
+
+
+struct session
+{
+    string date;
+    char presence;
+};
+
 
 class Attendance
 {
@@ -39,9 +42,9 @@ class Attendance
             return attended;
         }
 
-        void mark(char *d, char p)
+        void mark(string d, char p)
         {
-            strcpy(record[pos].date, d);
+            record[pos].date = d;
             record[pos].presence = p;
             pos++;
             if(p=='P')
@@ -63,18 +66,18 @@ class Attendance
 class Person
 {
     protected:
-    char name[20], uname[20], password[20];
+    string name, uname, password;
 
     public:
-        char* Uname()
+        string Uname()
         {
             return uname;
         }
-        char* Password()
+        string Password()
         {
             return password;
         }
-        char* Name()
+        string Name()
 	    {
 	        return name;
 	    }
@@ -91,12 +94,12 @@ class Student: public Person
 	    {
 	        return admno;
 	    }
-		void enterData(int a, char* n, char* u, char* p)
+		void enterData(int a, string n, string u, string p)
 		{
-            admno=a;
-            strcpy(name, n);
-            strcpy(uname, u);
-            strcpy(password, p);
+            admno = a;
+            name = n;
+            uname = u;
+            password = p;
 		}
 		void showData()
 		{
@@ -110,18 +113,18 @@ class Student: public Person
         {
             cout<<"\n\nEnter Student Details......\n";
             cout<<"Enter Admission No.     : "; cin>>admno;
-            cout<<"Enter Full Name         : "; cin.ignore(); cin.getline(name,20);
+            cout<<"Enter Full Name         : "; cin.ignore(); getline(cin,name);
             cout<<"Enter Username          : "; cin>>uname;
             cout<<"Enter Password          : "; cin>>password;
             cout<<endl;
         }
-        void markAttendance(int sub, char* date, char presence)
+        void markAttendance(int code, string date, char presence)
         {
-            subjects[sub].mark(date,presence);
+            subjects[code].mark(date, presence);
         }
-        void displayAttendance(int sub)
+        void displayAttendance(int code)
         {
-            subjects[sub].display();
+            subjects[code].display();
         }
         void report()
         {
@@ -141,24 +144,24 @@ class Student: public Person
 class Faculty:public Person
 {
     int id;
-    int subcode;
+    int code;
 
     public:
         int Id()
 	    {
 	        return id;
 	    }
-	    int Subcode()
+	    int Code()
 	    {
-	        return subcode;
+	        return code;
 	    }
-		void enterData(int i, char* n, char* u, char* p, int s)
+		void enterData(int i, string n, string u, string p, int c)
 		{
-            id=i;
-            strcpy(name, n);
-            strcpy(uname, u);
-            strcpy(password, p);
-            subcode=s;
+            id = i;
+            name = n;
+            uname = u;
+            password = p;
+            code = c;
 		}
 		void showData()
 		{
@@ -166,17 +169,19 @@ class Faculty:public Person
             cout<<"ID                : "<<id<<endl;
             cout<<"Full Name         : "<<name<<endl;
             cout<<"Username          : "<<uname<<endl;
-            cout<<"Subcode           : "<<subcode<<endl;
+            cout<<"Assigned Subject  : "<<sublist[code].name<<endl;
+            cout<<"Code              : "<<sublist[code].subcode<<endl;
+
             cout<<endl;
 		}
 		void askData()
         {
             cout<<"\n\nEnter Faculty Details......\n";
             cout<<"Enter ID                : "; cin>>id;
-            cout<<"Enter Full Name         : "; cin.ignore(); cin.getline(name,20);
+            cout<<"Enter Full Name         : "; cin.ignore(); getline(cin, name);
             cout<<"Enter Username          : "; cin>>uname;
             cout<<"Enter Password          : "; cin>>password;
-            cout<<"Enter Subject Code      : "; cin>>subcode;
+            cout<<"Enter Subject Code      : "; cin>>code;
             cout<<endl;
         }
 }F,loggedF;
@@ -185,22 +190,23 @@ class Faculty:public Person
 class Admin:public Person
 {
     public:
-		void enterData(char* n, char* u, char* p)
+		void enterData(string n, string u, string p)
 		{
-            strcpy(name, n);
-            strcpy(uname, u);
-            strcpy(password, p);
+            name = n;
+            uname = u;
+            password = p;
 		}
 
 		void askData()
         {
             cout<<"\n\nEnter Admin Details......\n";
-            cout<<"Enter Full Name         : "; cin.getline(name,20);
+            cout<<"Enter Full Name         : "; getline(cin, name);
             cout<<"Enter Username          : "; cin>>uname;
             cout<<"Enter Password          : "; cin>>password;
             cout<<endl;
         }
 }A,loggedA;
+
 
 void writeSData()
 {
@@ -211,7 +217,7 @@ void writeSData()
 	fin.open("Students.dat",ios::in|ios::binary);
 	while(fin.read((char*)&S1,sizeof(S1)))
 	{
-		if(S.Admno()==S1.Admno() || !strcmp(S.Uname(),S1.Uname()))
+		if(S.Admno() == S1.Admno() || S.Uname() == S1.Uname())
 		    flag++;
 	}
     if(flag==0)
@@ -237,7 +243,7 @@ void writeFData()
 	fin.open("Faculty.dat",ios::in|ios::binary);
 	while(fin.read((char*)&F1,sizeof(F1)))
 	{
-		if(F.Id()==F1.Id() || !strcmp(F.Uname(),F1.Uname()))
+		if(F.Id() == F1.Id() || F.Uname() == F1.Uname())
 		    flag++;
 	}
     if(flag==0)
@@ -397,8 +403,8 @@ void deleteFData()
 
 void takeAttendance()
 {
-    int sub = loggedF.Subcode();
-    char date[11];
+    int code = loggedF.Code();
+    string date;
     cout<<"Enter date (DD-MM-YYYY):";
     cin>>date;
     system("cls");
@@ -413,76 +419,76 @@ void takeAttendance()
         cout<<S.Name();
 		cout<<" | ";
 		cin>>presence;
-		S.markAttendance(sub, date, presence);
+		S.markAttendance(code, date, presence);
 		fio.seekg(posi-sizeof(S));
 		fio.write((char*)&S,sizeof(S));
 	}
 	fio.close();
 }
 
-void showAttendance(int n = 0)
+void showAttendance(int a = 0)
 {
 	int flag=0;
 	ifstream fin;
 	fin.open("Students.dat",ios::in|ios::binary);
 
-    if(n==0)
+    if(a==0)
     {
-	cout<<"Enter Admission Number : ";
-	cin>>n;
+		cout<<"Enter Admission Number : ";
+		cin>>a;
     }
 
-    int sub;
+    int code;
 	system("cls");
 	cout<<"Subjects\n";
-	cout<<"0. Operating System\n";
-	cout<<"1. Object Oriented Programming\n";
-	cout<<"2. Discreet Math\n";
-	cout<<"3. Environmental Science\n";
-	cout<<"4. Computer Organization and Architecture\n";
-	cout<<"5. Organizational Behaviour\n";
-	cout<<"6. Web Technology\n";
+	cout<<"0. Web Technology\n";
+	cout<<"1. Discreet Math\n";
+	cout<<"2. Computer Organization and Architecture\n";
+	cout<<"3. Operating System\n";
+	cout<<"4. Object Oriented Programming\n";
+	cout<<"5. Environmental Science\n";
+	cout<<"6. Organizational Behaviour\n";
 	cout<<"Enter your choice  : ";
-	cin>>sub;
+	cin>>code;
 	system("cls");
 
 
 	while(fin.read((char*)&S,sizeof(S)))
 	{
-		if(n==S.Admno())
+		if(a==S.Admno())
 		{
-			cout<<"The Attendance of Admission No. "<<n<<" :\n";
-			S.displayAttendance(sub);
+			cout<<"The Attendance of Admission No. "<<a<<" :\n";
+			S.displayAttendance(code);
 			flag++;
 		}
 	}
 	fin.close();
 	if(flag==0)
-		cout<<"The Admission No. "<<n<<" not found....\n\n";
+		cout<<"The Admission No. "<<a<<" not found....\n\n";
 	cout<<"\n\nData Reading from File Successfully Done....\n";
 }
 
 void generateReport()
 {
-	int n, flag=0;
+	int a, flag=0;
 	ifstream fin;
 	fin.open("Students.dat",ios::in|ios::binary);
 	cout<<"Enter Admission Number : ";
-	cin>>n;
+	cin>>a;
 
 	system("cls");
 	while(fin.read((char*)&S,sizeof(S)))
 	{
-		if(n==S.Admno())
+		if(a==S.Admno())
 		{
-			cout<<"The Attendance Report of Admission No. "<<n<<" :\n";
+			cout<<"The Attendance Report of Admission No. "<<a<<" :\n";
 			S.report();
 			flag++;
 		}
 	}
 	fin.close();
 	if(flag==0)
-		cout<<"The Admission No. "<<n<<" not found....\n\n";
+		cout<<"The Admission No. "<<a<<" not found....\n\n";
 	cout<<"\n\nData Reading from File Successfully Done....\n";
 }
 
@@ -611,7 +617,7 @@ void studentMenu()
 
 void reset()
 {
-    char uname[20], password[20];
+    string uname, password;
     system("cls");
     cout<<"======================================================\n";
     cout<<"..............ATTENDANCE MANAGEMENT SYSTEM............\n";
@@ -622,12 +628,11 @@ void reset()
     cout<<"Enter password:";
     cin>>password;
 
-    int flag=0;
     ifstream fin;
     fin.open("Admin.dat",ios::in|ios::binary);
     fin.read((char*)&A,sizeof(A));
     fin.close();
-    if(!strcmp(uname,A.Uname()) && !strcmp(password,A.Password()))
+    if(uname == A.Uname() && password == A.Password())
     {
         remove("Admin.dat");
         remove("Faculty.dat");
@@ -643,7 +648,9 @@ void reset()
 
 void auth()
 {
-    char uname[20], password[20], AFS;
+    string uname, password;
+	char AFS;
+
     system("cls");
     cout<<"======================================================\n";
     cout<<"..............ATTENDANCE MANAGEMENT SYSTEM............\n";
@@ -659,13 +666,13 @@ void auth()
     int flag=0;
     ifstream fin;
 
-    if(AFS=='a')
+    if(AFS == 'a')
     {
         fin.open("Admin.dat",ios::in|ios::binary);
 
         while(fin.read((char*)&A,sizeof(A)))
         {
-            if(!strcmp(uname,A.Uname()) && !strcmp(password,A.Password()))
+            if(uname == A.Uname() && password == A.Password())
             {
                 loggedA.enterData(A.Name(),A.Uname(),A.Password());
                 flag++;
@@ -681,9 +688,9 @@ void auth()
 
         while(fin.read((char*)&F,sizeof(F)))
         {
-            if(!strcmp(uname,F.Uname()) && !strcmp(password,F.Password()))
+            if(uname == F.Uname() && password == F.Password())
             {
-                loggedF.enterData(F.Id(),F.Name(),F.Uname(),F.Password(),F.Subcode());
+                loggedF.enterData(F.Id(),F.Name(),F.Uname(),F.Password(),F.Code());
                 flag++;
                 facultyMenu();
             }
@@ -697,7 +704,7 @@ void auth()
 
         while(fin.read((char*)&S,sizeof(S)))
         {
-            if(!strcmp(uname,S.Uname()) && !strcmp(password,S.Password()))
+            if(uname == S.Uname() && password == S.Password())
             {
                 loggedS.enterData(S.Admno(),S.Name(),S.Uname(),S.Password());
                 flag++;
@@ -717,7 +724,7 @@ void auth()
 
 void logout()
 {
-    char dummy[] = "dummy";
+    string dummy = "dummy";
     loggedF.enterData(-1,dummy,dummy,dummy,-1);
     loggedS.enterData(-1,dummy,dummy,dummy);
     loggedA.enterData(dummy,dummy,dummy);
@@ -780,13 +787,26 @@ void admin()
 
 void createSubjects()
 {
-    strcpy(sublist[0].name, "Operating Systems");
-    strcpy(sublist[1].name, "Object Oriented Programming");
-    strcpy(sublist[2].name, "Discreet Math");
-    strcpy(sublist[3].name, "Environmental Science");
-    strcpy(sublist[4].name, "Computer Organization and Architecture");
-    strcpy(sublist[5].name, "Organizational behaviour");
-    strcpy(sublist[6].name, "Web Technology");
+    sublist[0].name = "Web Technology";
+    sublist[0].subcode = "PCC-CSE-201G";
+
+    sublist[1].name = "Discreet Math";
+    sublist[1].subcode = "PCC-CSE-202G";
+
+    sublist[2].name = "Computer Organization and Architecture";
+    sublist[2].subcode = "PCC-CSE-204G";
+
+    sublist[3].name = "Operating Systems";
+    sublist[3].subcode = "PCC-CSE-206G";
+
+    sublist[4].name = "Object Oriented Programming";
+    sublist[4].subcode = "PCC-CSE-208G";
+
+    sublist[5].name = "Environmental Science";
+    sublist[5].subcode = "MC-106G";
+
+    sublist[6].name = "Organizational behaviour";
+    sublist[6].subcode = "HSMC-02G";
 }
 
 
