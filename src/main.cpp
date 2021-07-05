@@ -1,20 +1,20 @@
 #include<iostream>
 #include<fstream>
-#include<string>
+#include<string.h>
 
 using namespace std;
 
 
 struct Subject
 {
-    string name;
-	string subcode;
+    char name[50];
+	char subcode[50];
 }sublist[7];
 
 
 struct session
 {
-    string date;
+    char date[11];
     char presence;
 };
 
@@ -42,12 +42,13 @@ class Attendance
             return attended;
         }
 
-        void mark(string d, char p)
+        void mark(char* d, char p)
         {
-            record[pos].date = d;
+            
+			strcpy(record[pos].date, d);
             record[pos].presence = p;
             pos++;
-            if(p=='P')
+            if(p=='P' || p=='p')
                 attended++;
         }
 
@@ -66,18 +67,18 @@ class Attendance
 class Person
 {
     protected:
-    string name, uname, password;
+    char name[50], uname[50], password[50];
 
     public:
-        string Uname()
+        char* Uname()
         {
             return uname;
         }
-        string Password()
+        char* Password()
         {
             return password;
         }
-        string Name()
+        char* Name()
 	    {
 	        return name;
 	    }
@@ -94,12 +95,12 @@ class Student: public Person
 	    {
 	        return admno;
 	    }
-		void enterData(int a, string n, string u, string p)
+		void enterData(int a, char* n, char* u, char* p)
 		{
             admno = a;
-            name = n;
-            uname = u;
-            password = p;
+			strcpy(name, n);
+			strcpy(uname, u);
+			strcpy(password, p);
 		}
 		void showData()
 		{
@@ -113,12 +114,12 @@ class Student: public Person
         {
             cout<<"\n\nEnter Student Details......\n";
             cout<<"Enter Admission No.     : "; cin>>admno;
-            cout<<"Enter Full Name         : "; cin.ignore(); getline(cin,name);
+            cout<<"Enter Full Name         : "; cin.ignore(); cin.getline(name, 50);
             cout<<"Enter Username          : "; cin>>uname;
             cout<<"Enter Password          : "; cin>>password;
             cout<<endl;
         }
-        void markAttendance(int code, string date, char presence)
+        void markAttendance(int code, char* date, char presence)
         {
             subjects[code].mark(date, presence);
         }
@@ -155,12 +156,12 @@ class Faculty:public Person
 	    {
 	        return code;
 	    }
-		void enterData(int i, string n, string u, string p, int c)
+		void enterData(int i, char* n, char* u, char* p, int c)
 		{
             id = i;
-            name = n;
-            uname = u;
-            password = p;
+			strcpy(name, n);
+			strcpy(uname, u);
+			strcpy(password, p);
             code = c;
 		}
 		void showData()
@@ -178,7 +179,7 @@ class Faculty:public Person
         {
             cout<<"\n\nEnter Faculty Details......\n";
             cout<<"Enter ID                : "; cin>>id;
-            cout<<"Enter Full Name         : "; cin.ignore(); getline(cin, name);
+            cout<<"Enter Full Name         : "; cin.ignore(); cin.getline(name, 50);
             cout<<"Enter Username          : "; cin>>uname;
             cout<<"Enter Password          : "; cin>>password;
             cout<<"Enter Subject Code      : "; cin>>code;
@@ -190,17 +191,17 @@ class Faculty:public Person
 class Admin:public Person
 {
     public:
-		void enterData(string n, string u, string p)
+		void enterData(char* n, char* u, char* p)
 		{
-            name = n;
-            uname = u;
-            password = p;
+            strcpy(name, n);
+			strcpy(uname, u);
+			strcpy(password, p);
 		}
 
 		void askData()
         {
             cout<<"\n\nEnter Admin Details......\n";
-            cout<<"Enter Full Name         : "; getline(cin, name);
+            cout<<"Enter Full Name         : "; cin.getline(name, 50);
             cout<<"Enter Username          : "; cin>>uname;
             cout<<"Enter Password          : "; cin>>password;
             cout<<endl;
@@ -217,7 +218,7 @@ void writeSData()
 	fin.open("Students.dat",ios::in|ios::binary);
 	while(fin.read((char*)&S1,sizeof(S1)))
 	{
-		if(S.Admno() == S1.Admno() || S.Uname() == S1.Uname())
+		if(S.Admno() == S1.Admno() || strcmp(S.Uname(), S1.Uname()) == 0)
 		    flag++;
 	}
     if(flag==0)
@@ -243,7 +244,7 @@ void writeFData()
 	fin.open("Faculty.dat",ios::in|ios::binary);
 	while(fin.read((char*)&F1,sizeof(F1)))
 	{
-		if(F.Id() == F1.Id() || F.Uname() == F1.Uname())
+		if(F.Id() == F1.Id() || strcmp(F.Uname(), F1.Uname())==0)
 		    flag++;
 	}
     if(flag==0)
@@ -404,7 +405,7 @@ void deleteFData()
 void takeAttendance()
 {
     int code = loggedF.Code();
-    string date;
+    char date[11];
     cout<<"Enter date (DD-MM-YYYY):";
     cin>>date;
     system("cls");
@@ -617,7 +618,7 @@ void studentMenu()
 
 void reset()
 {
-    string uname, password;
+    char uname[50], password[50];
     system("cls");
     cout<<"======================================================\n";
     cout<<"..............ATTENDANCE MANAGEMENT SYSTEM............\n";
@@ -632,7 +633,7 @@ void reset()
     fin.open("Admin.dat",ios::in|ios::binary);
     fin.read((char*)&A,sizeof(A));
     fin.close();
-    if(uname == A.Uname() && password == A.Password())
+    if(strcmp(uname, A.Uname())==0 && strcmp(password, A.Password())==0)
     {
         remove("Admin.dat");
         remove("Faculty.dat");
@@ -648,7 +649,7 @@ void reset()
 
 void auth()
 {
-    string uname, password;
+    char uname[50], password[50];
 	char AFS;
 
     system("cls");
@@ -672,7 +673,7 @@ void auth()
 
         while(fin.read((char*)&A,sizeof(A)))
         {
-            if(uname == A.Uname() && password == A.Password())
+            if(strcmp(uname, A.Uname())==0 && strcmp(password, A.Password())==0)
             {
                 loggedA.enterData(A.Name(),A.Uname(),A.Password());
                 flag++;
@@ -688,7 +689,7 @@ void auth()
 
         while(fin.read((char*)&F,sizeof(F)))
         {
-            if(uname == F.Uname() && password == F.Password())
+            if(strcmp(uname, F.Uname())==0 && strcmp(password, F.Password())==0)
             {
                 loggedF.enterData(F.Id(),F.Name(),F.Uname(),F.Password(),F.Code());
                 flag++;
@@ -704,7 +705,7 @@ void auth()
 
         while(fin.read((char*)&S,sizeof(S)))
         {
-            if(uname == S.Uname() && password == S.Password())
+            if(strcmp(uname, S.Uname())==0 && strcmp(password, S.Password())==0)
             {
                 loggedS.enterData(S.Admno(),S.Name(),S.Uname(),S.Password());
                 flag++;
@@ -724,7 +725,7 @@ void auth()
 
 void logout()
 {
-    string dummy = "dummy";
+    char dummy[] = "dummy";
     loggedF.enterData(-1,dummy,dummy,dummy,-1);
     loggedS.enterData(-1,dummy,dummy,dummy);
     loggedA.enterData(dummy,dummy,dummy);
@@ -787,26 +788,26 @@ void admin()
 
 void createSubjects()
 {
-    sublist[0].name = "Web Technology";
-    sublist[0].subcode = "PCC-CSE-201G";
+	strcpy(sublist[0].name, "Web Technology");
+	strcpy(sublist[0].subcode, "PCC-CSE-201G");
 
-    sublist[1].name = "Discreet Math";
-    sublist[1].subcode = "PCC-CSE-202G";
+	strcpy(sublist[1].name, "Discreet Math");
+	strcpy(sublist[1].subcode, "PCC-CSE-202G");
+    
+	strcpy(sublist[2].name, "Computer Organization and Architecture");
+	strcpy(sublist[2].subcode, "PCC-CSE-204G");
+    
+	strcpy(sublist[3].name, "Operating Systems");
+	strcpy(sublist[3].subcode, "PCC-CSE-206G");
 
-    sublist[2].name = "Computer Organization and Architecture";
-    sublist[2].subcode = "PCC-CSE-204G";
+	strcpy(sublist[4].name, "Object Oriented Programming");
+	strcpy(sublist[4].subcode, "PCC-CSE-208G");
 
-    sublist[3].name = "Operating Systems";
-    sublist[3].subcode = "PCC-CSE-206G";
+	strcpy(sublist[5].name, "Environmental Science");
+	strcpy(sublist[5].subcode, "MC-106G");
 
-    sublist[4].name = "Object Oriented Programming";
-    sublist[4].subcode = "PCC-CSE-208G";
-
-    sublist[5].name = "Environmental Science";
-    sublist[5].subcode = "MC-106G";
-
-    sublist[6].name = "Organizational behaviour";
-    sublist[6].subcode = "HSMC-02G";
+	strcpy(sublist[6].name, "Organizational behaviour");
+	strcpy(sublist[6].subcode, "HSMC-02G");
 }
 
 
