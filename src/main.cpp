@@ -5,7 +5,7 @@
 using namespace std;
 
 
-struct Subject
+struct Subject 
 {
     char name[50];
 	char subcode[50];
@@ -19,7 +19,7 @@ struct session
 };
 
 
-class Attendance
+class Attendance //
 {
     session record[100];
     int pos;
@@ -209,7 +209,7 @@ class Admin:public Person
 }A,loggedA;
 
 
-void writeSData()
+void writeSData() //Write student data
 {
     S.askData();
     int flag = 0;
@@ -234,7 +234,7 @@ void writeSData()
 	fin.close();
 }
 
-void writeFData()
+void writeFData() // Write faculty data
 {
     F.askData();
     int flag=0;
@@ -260,7 +260,7 @@ void writeFData()
 	fin.close();
 }
 
-void displaySData()
+void displaySData() //Display student data
 {
 	ifstream fin;
 	fin.open("Students.dat",ios::in|ios::binary);
@@ -272,7 +272,7 @@ void displaySData()
 	cout<<"\n\nData Reading from File Successfully Done....\n";
 }
 
-void displayFData()
+void displayFData() //Display faculty data
 {
 	ifstream fin;
 	fin.open("Faculty.dat",ios::in|ios::binary);
@@ -284,7 +284,7 @@ void displayFData()
 	cout<<"\n\nData Reading from File Successfully Done....\n";
 }
 
-void searchSData()
+void searchSData() //Search student data
 {
 	int n, flag=0;
 	ifstream fin;
@@ -307,7 +307,7 @@ void searchSData()
 	cout<<"\n\nData Reading from File Successfully Done....\n";
 }
 
-void searchFData()
+void searchFData() //Search faculty data
 {
 	int n, flag=0;
 	ifstream fin;
@@ -330,7 +330,7 @@ void searchFData()
 	cout<<"\n\nData Reading from File Successfully Done....\n";
 }
 
-void deleteSData()
+void deleteSData() //Delete Student data
 {
 	int n, flag=0;
 	ifstream fin;
@@ -366,7 +366,7 @@ void deleteSData()
 	rename("tempStud.dat","Students.dat");
 }
 
-void deleteFData()
+void deleteFData() //Delete faculty data
 {
 	int n, flag=0;
 	ifstream fin;
